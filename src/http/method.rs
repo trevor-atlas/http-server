@@ -1,3 +1,6 @@
+use std::str::FromStr;
+
+#[derive(Debug)]
 pub enum Method {
     GET, // The GET method requests a representation of the specified resource. Requests using GET should only retrieve data.
     HEAD, // The HEAD method asks for a response identical to a GET request, but without the response body.
@@ -9,3 +12,24 @@ pub enum Method {
     TRACE, // The TRACE method performs a message loop-back test along the path to the target resource.
     PATCH, // The PATCH method applies partial modifications to a resource.
 }
+
+impl FromStr for Method {
+    type Err = MethodError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "GET" => Ok(Self::GET),
+            "HEAD" => Ok(Self::HEAD),
+            "POST" => Ok(Self::POST),
+            "PUT" => Ok(Self::PUT),
+            "DELETE" => Ok(Self::DELETE),
+            "CONNECT" => Ok(Self::CONNECT),
+            "OPTIONS" => Ok(Self::OPTIONS),
+            "TRACE" => Ok(Self::TRACE),
+            "PATCH" => Ok(Self::PATCH), 
+            _ => Err(MethodError),
+        }
+
+    }
+}
+
+pub struct MethodError;
