@@ -22,7 +22,10 @@ impl WebsiteHandler {
                     None
                 }
             },
-            Err(_) => None
+            Err(e) => {
+                println!("Path is bad! {}", e);
+                None
+            }
         }
     }
 }
@@ -39,7 +42,6 @@ impl Handler for WebsiteHandler {
                         Some(content) => Response::new(StatusCode::Ok, Some(content)),
                         None => Response::new(StatusCode::NotFound, None),
                     }
-                    _ => Response::new(StatusCode::NotFound, None),
                 }
             },
             _ => Response::new(StatusCode::NotFound, None),

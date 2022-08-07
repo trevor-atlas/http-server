@@ -1,5 +1,5 @@
 use super::method::{MethodError, Method};
-use super::{QueryString};
+use super::{QueryString, Headers};
 use std::convert::{From, TryFrom};
 use std::error::Error;
 use std::fmt::Display;
@@ -9,12 +9,12 @@ use std::fmt::Debug;
 use std::str::Utf8Error;
 use std::str;
 
-
 #[derive(Debug)]
 pub struct Request<'buf> {
     method: Method,
     path: &'buf str,
     query_string: Option<QueryString<'buf>>,
+    headers: Headers<'buf>,
 }
 
 impl<'buf> Request<'buf> {
@@ -43,7 +43,8 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
         let request = str::from_utf8(buffer).or(Err(ParseError::InvalidEncoding))?;
         let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
         let (mut path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
-        let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (protocol, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        println!("REQUEST IS {}", request);
 
         if protocol != "HTTP/1.1" {
             return Err(ParseError::InvalidProtocol)
@@ -57,8 +58,12 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
             path = &path[..i];
         }
 
+        let headers = Headers::from(request);
+        println!("Headers are: {}", headers);
+        println!("Path is : {}", path);
+
         Ok(Self {
-            path, query_string, method
+            path, query_string, method, headers
         })
     }
 }
@@ -69,7 +74,6 @@ fn get_next_word(request: &str) -> Option<(&str, &str)> {
             return Some((&request[..i], &request[i + 1..]))
         }
     }
-
     None
 }
 
