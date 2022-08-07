@@ -28,7 +28,6 @@ impl FromStr for Method {
             "PATCH" => Ok(Self::PATCH), 
             _ => Err(MethodError),
         }
-
     }
 }
 

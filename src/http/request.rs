@@ -18,6 +18,18 @@ pub struct Request<'buf> {
 }
 
 impl<'buf> Request<'buf> {
+    pub fn path(&self) -> &str {
+        &self.path
+    }
+
+    pub fn method(&self) -> &Method {
+        &self.method
+    }
+
+    pub fn query_string(&self) -> Option<&QueryString> {
+        self.query_string.as_ref()
+    }
+
     fn from_byte_array(buffer: &[u8]) -> Result<Self, String> {
         unimplemented!()
     }
